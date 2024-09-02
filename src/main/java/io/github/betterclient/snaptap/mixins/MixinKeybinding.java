@@ -23,7 +23,7 @@ public class MixinKeybinding implements KeybindingAccess {
     public void onGetPressed(CallbackInfoReturnable<Boolean> cir) {
         if (!SnapTap.TOGGLED) return;
 
-        if (this.defaultKey.getCode() == 65) {
+        if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_A) {
             //Left
             if (this.pressed) {
                 if (SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME == 0) {
@@ -35,7 +35,7 @@ public class MixinKeybinding implements KeybindingAccess {
                 cir.setReturnValue(SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME <= SnapTap.LEFT_STRAFE_LAST_PRESS_TIME);
                 cir.cancel();
             }
-        } else if (this.defaultKey.getCode() == 68) {
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_D) {
             //Right
             if (this.pressed) {
                 if (SnapTap.LEFT_STRAFE_LAST_PRESS_TIME == 0) {
@@ -47,6 +47,30 @@ public class MixinKeybinding implements KeybindingAccess {
                 cir.setReturnValue(SnapTap.LEFT_STRAFE_LAST_PRESS_TIME <= SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME);
                 cir.cancel();
             }
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_W) {
+            //Forward
+            if (this.pressed) {
+                if (SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME == 0) {
+                    cir.setReturnValue(true);
+                    cir.cancel();
+                    return;
+                }
+
+                cir.setReturnValue(SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME <= SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME);
+                cir.cancel();
+            }
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_S) {
+            //Backward
+            if (this.pressed) {
+                if (SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME == 0) {
+                    cir.setReturnValue(true);
+                    cir.cancel();
+                    return;
+                }
+
+                cir.setReturnValue(SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME <= SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME);
+                cir.cancel();
+            }
         }
     }
 
@@ -54,19 +78,33 @@ public class MixinKeybinding implements KeybindingAccess {
     public void setPressed(boolean pressed, CallbackInfo ci) {
         if (!SnapTap.TOGGLED) return;
 
-        if (this.defaultKey.getCode() == 65) {
+        if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_A) {
             //Left
             if (pressed) {
                 SnapTap.LEFT_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.LEFT_STRAFE_LAST_PRESS_TIME = 0;
             }
-        } else if (this.defaultKey.getCode() == 68) {
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_D) {
             //Right
             if (pressed) {
                 SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME = 0;
+            }
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_W) {
+            //Forward
+            if (pressed) {
+                SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
+            } else {
+                SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME = 0;
+            }
+        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_S) {
+            //Backward
+            if (pressed) {
+                SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
+            } else {
+                SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME = 0;
             }
         }
     }

@@ -3,5 +3,6 @@
   "text.snaptap.toggled": "Snap tap is %s",
   "text.snaptap.enabled": "ON",
   "text.snaptap.keystrokestoggle": "Toggle SnapTap Keystrokes",
-  "text.snaptap.toggledkeystokes": "Keystrokes is %s"
+  "text.snaptap.toggledkeystokes": "Keystrokes is %s",
+  "text.snaptap.serverdisallow": "Current server doesn't allow usage of SnapTap."
 }
