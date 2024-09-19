@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
@@ -11,9 +12,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SnapTap implements ModInitializer {
     public static long LEFT_STRAFE_LAST_PRESS_TIME = 0;
@@ -33,14 +38,30 @@ public class SnapTap implements ModInitializer {
 
     public static Logger LOGGER = LoggerFactory.getLogger("SnapTap");
 
+    public File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "snaptap_hud.txt");
+    public File toggleFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "snaptap_toggle.txt");
+    public File toggleKeystrokesFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "snaptap_toggle_keystrokes.txt");
+
     @Override
     public void onInitialize() {
+        try {
+            KEYSTROKES_TOGGLED = getOrCreateHud();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         LEFT_STRAFE_LAST_PRESS_TIME = 0;
         RIGHT_STRAFE_LAST_PRESS_TIME = 0;
         FORWARD_STRAFE_LAST_PRESS_TIME = 0;
         BACKWARD_STRAFE_LAST_PRESS_TIME = 0;
 
-        TOGGLE_BIND = new KeyBinding("text.snaptap.toggle", InputUtil.GLFW_KEY_F8, "key.categories.misc") {
+        int b1;
+        try {
+            b1 = getOrCreateToggle();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        TOGGLE_BIND = new KeyBinding("text.snaptap.toggle", b1, "key.categories.misc") {
             @Override
             public void setPressed(boolean pressed) {
                 if (!SERVER_ALLOWS) {
@@ -60,9 +81,31 @@ public class SnapTap implements ModInitializer {
 
                 super.setPressed(pressed);
             }
+
+            @Override
+            public void setBoundKey(InputUtil.Key boundKey) {
+                super.setBoundKey(boundKey);
+
+                try {
+                    toggleFile.delete();
+                    toggleFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(toggleFile);
+                    fos.write(("" + boundKey.getCode()).getBytes());
+                    fos.close();
+                } catch (Exception e) {
+                    LOGGER.error("Failed to save snap-tap key", e);
+                }
+            }
         };
 
-        KEYSTROKES_TOGGLE_BIND = new KeyBinding("text.snaptap.keystrokestoggle", InputUtil.GLFW_KEY_F7, "key.categories.misc") {
+        int b2;
+        try {
+            b2 = getOrCreateKeystrokesToggle();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        KEYSTROKES_TOGGLE_BIND = new KeyBinding("text.snaptap.keystrokestoggle", b2, "key.categories.misc") {
             @Override
             public void setPressed(boolean pressed) {
                 if (!SERVER_ALLOWS) {
@@ -76,9 +119,33 @@ public class SnapTap implements ModInitializer {
                                     Text.translatable(KEYSTROKES_TOGGLED ? "text.snaptap.enabled" : "options.ao.off")
                                             .fillStyle(Style.EMPTY
                                                     .withColor(KEYSTROKES_TOGGLED ? Formatting.GREEN : Formatting.RED))));
+                    try {
+                        configFile.delete();
+                        configFile.createNewFile();
+                        FileOutputStream fos = new FileOutputStream(configFile);
+                        fos.write(("" + KEYSTROKES_TOGGLED).getBytes());
+                        fos.close();
+                    } catch (Exception e) {
+                        LOGGER.error("Failed to save keystrokes settings", e);
+                    }
                 }
 
                 super.setPressed(pressed);
+            }
+
+            @Override
+            public void setBoundKey(InputUtil.Key boundKey) {
+                super.setBoundKey(boundKey);
+
+                try {
+                    toggleKeystrokesFile.delete();
+                    toggleKeystrokesFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(toggleKeystrokesFile);
+                    fos.write(("" + boundKey.getCode()).getBytes());
+                    fos.close();
+                } catch (Exception e) {
+                    LOGGER.error("Failed to save keystrokes settings", e);
+                }
             }
         };
 
@@ -96,6 +163,54 @@ public class SnapTap implements ModInitializer {
             TOGGLED = PRE_SERVER_ALLOWS;
             SERVER_ALLOWS = true;
         });
+    }
+
+    private int getOrCreateKeystrokesToggle() throws IOException {
+        if (!toggleKeystrokesFile.exists()) {
+            toggleKeystrokesFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(toggleKeystrokesFile);
+            fos.write(InputUtil.GLFW_KEY_F7);
+            fos.close();
+
+            return InputUtil.GLFW_KEY_F7;
+        }
+        FileInputStream fis = new FileInputStream(toggleKeystrokesFile);
+        byte[] bites = fis.readAllBytes();
+        fis.close();
+
+        return Integer.parseInt(new String(bites));
+    }
+
+    private int getOrCreateToggle() throws IOException {
+        if (!toggleFile.exists()) {
+            toggleFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(toggleFile);
+            fos.write(InputUtil.GLFW_KEY_F8);
+            fos.close();
+
+            return InputUtil.GLFW_KEY_F8;
+        }
+        FileInputStream fis = new FileInputStream(toggleFile);
+        byte[] bites = fis.readAllBytes();
+        fis.close();
+
+        return Integer.parseInt(new String(bites));
+    }
+
+    private boolean getOrCreateHud() throws IOException {
+        if (!configFile.exists()) {
+            configFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(configFile);
+            fos.write("true".getBytes());
+            fos.close();
+
+            return true;
+        }
+        FileInputStream fis = new FileInputStream(configFile);
+        byte[] bites = fis.readAllBytes();
+        fis.close();
+
+        return Boolean.parseBoolean(new String(bites));
     }
 
     public static void render(DrawContext context) {
