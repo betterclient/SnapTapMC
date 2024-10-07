@@ -76,7 +76,7 @@ public class SnapTap implements ModInitializer {
         if (!toggleFile.exists()) {
             toggleFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(toggleFile);
-            fos.write(InputUtil.GLFW_KEY_F8);
+            fos.write((InputUtil.GLFW_KEY_F8 + "").getBytes());
             fos.close();
 
             return InputUtil.GLFW_KEY_F8;
