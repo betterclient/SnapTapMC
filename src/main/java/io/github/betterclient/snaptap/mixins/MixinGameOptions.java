@@ -21,6 +21,6 @@ public class MixinGameOptions {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void onInit(MinecraftClient client, File optionsFile, CallbackInfo ci) {
-        this.allKeys = ArrayUtils.addAll(this.allKeys, SnapTap.TOGGLE_BIND, SnapTap.KEYSTROKES_TOGGLE_BIND);
+        this.allKeys = ArrayUtils.addAll(this.allKeys, SnapTap.TOGGLE_BIND);
     }
 }

@@ -1,20 +1,18 @@
 package io.github.betterclient.snaptap.mixins;
 
-import io.github.betterclient.snaptap.KeybindingAccess;
 import io.github.betterclient.snaptap.SnapTap;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(KeyBinding.class)
-public class MixinKeybinding implements KeybindingAccess {
+public class MixinKeybinding {
     @Shadow @Final private InputUtil.Key defaultKey;
 
     @Shadow private boolean pressed;
@@ -107,10 +105,5 @@ public class MixinKeybinding implements KeybindingAccess {
                 SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME = 0;
             }
         }
-    }
-
-    @Unique
-    public boolean snapTap$isPressedReal() {
-        return this.pressed;
     }
 }

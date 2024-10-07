@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "io.github.betterclient.snaptap.mixins",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_8",
 	"mixins": [
 	],
 	"injectors": {
@@ -9,7 +9,6 @@
 	},
 	"client": [
 		"MixinGameOptions",
-		"MixinInGameHud",
 		"MixinKeybinding"
 	]
 }
