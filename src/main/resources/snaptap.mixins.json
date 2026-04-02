@@ -1,14 +1,15 @@
 {
-	"required": true,
-	"package": "io.github.betterclient.snaptap.mixins",
-	"compatibilityLevel": "JAVA_8",
-	"mixins": [
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"client": [
-		"MixinGameOptions",
-		"MixinKeybinding"
-	]
+  "required": true,
+  "package": "io.github.betterclient.snaptap.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MixinGameOptions",
+    "MixinKeybinding",
+    "MixinSnaptapToggleKey"
+  ]
 }

@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(KeyBinding.class)
 public class MixinKeybinding {
     @Shadow @Final private InputUtil.Key defaultKey;
-
     @Shadow private boolean pressed;
 
     @Inject(method = "isPressed", at = @At("HEAD"), cancellable = true)
