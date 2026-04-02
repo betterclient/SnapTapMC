@@ -1,9 +1,9 @@
 package io.github.betterclient.snaptap.mixins;
 
 import io.github.betterclient.snaptap.SnapTap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
 
-@Mixin(GameOptions.class)
-public class MixinGameOptions {
-    @Mutable @Shadow @Final public KeyBinding[] allKeys;
+@Mixin(Options.class)
+public class MixinOptions {
+    @Mutable @Shadow @Final public KeyMapping[] keyMappings;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void onInit(MinecraftClient client, File optionsFile, CallbackInfo ci) {
-        this.allKeys = ArrayUtils.addAll(this.allKeys, SnapTap.TOGGLE_BIND);
+    public void onInit(Minecraft client, File optionsFile, CallbackInfo ci) {
+        this.keyMappings = ArrayUtils.addAll(this.keyMappings, SnapTap.TOGGLE_BIND);
     }
 }

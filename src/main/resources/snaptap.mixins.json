@@ -8,8 +8,8 @@
     "defaultRequire": 1
   },
   "client": [
-    "MixinGameOptions",
-    "MixinKeybinding",
+    "MixinOptions",
+    "MixinKeyMapping",
     "MixinSnaptapToggleKey"
   ]
 }

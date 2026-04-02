@@ -1,8 +1,8 @@
 package io.github.betterclient.snaptap.mixins;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.betterclient.snaptap.SnapTap;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,18 +11,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(KeyBinding.class)
-public class MixinKeybinding {
-    @Shadow @Final private InputUtil.Key defaultKey;
-    @Shadow private boolean pressed;
+@Mixin(KeyMapping.class)
+public class MixinKeyMapping {
+    @Shadow private boolean isDown;
 
-    @Inject(method = "isPressed", at = @At("HEAD"), cancellable = true)
-    public void onGetPressed(CallbackInfoReturnable<Boolean> cir) {
+    @Shadow @Final private InputConstants.Key defaultKey;
+
+    @Inject(method = "isDown", at = @At("HEAD"), cancellable = true)
+    public void onGetDown(CallbackInfoReturnable<Boolean> cir) {
         if (!SnapTap.TOGGLED) return;
 
-        if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_A) {
+        if (this.defaultKey.getValue() == InputConstants.KEY_A) {
             //Left
-            if (this.pressed) {
+            if (this.isDown) {
                 if (SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME == 0) {
                     cir.setReturnValue(true);
                     cir.cancel();
@@ -32,9 +33,9 @@ public class MixinKeybinding {
                 cir.setReturnValue(SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME <= SnapTap.LEFT_STRAFE_LAST_PRESS_TIME);
                 cir.cancel();
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_D) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_D) {
             //Right
-            if (this.pressed) {
+            if (this.isDown) {
                 if (SnapTap.LEFT_STRAFE_LAST_PRESS_TIME == 0) {
                     cir.setReturnValue(true);
                     cir.cancel();
@@ -44,9 +45,9 @@ public class MixinKeybinding {
                 cir.setReturnValue(SnapTap.LEFT_STRAFE_LAST_PRESS_TIME <= SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME);
                 cir.cancel();
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_W) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_W) {
             //Forward
-            if (this.pressed) {
+            if (this.isDown) {
                 if (SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME == 0) {
                     cir.setReturnValue(true);
                     cir.cancel();
@@ -56,9 +57,9 @@ public class MixinKeybinding {
                 cir.setReturnValue(SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME <= SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME);
                 cir.cancel();
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_S) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_S) {
             //Backward
-            if (this.pressed) {
+            if (this.isDown) {
                 if (SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME == 0) {
                     cir.setReturnValue(true);
                     cir.cancel();
@@ -71,34 +72,34 @@ public class MixinKeybinding {
         }
     }
 
-    @Inject(method = "setPressed", at = @At("HEAD"))
-    public void setPressed(boolean pressed, CallbackInfo ci) {
+    @Inject(method = "setDown", at = @At("HEAD"))
+    public void setDown(boolean down, CallbackInfo ci) {
         if (!SnapTap.TOGGLED) return;
 
-        if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_A) {
+        if (this.defaultKey.getValue() == InputConstants.KEY_A) {
             //Left
-            if (pressed) {
+            if (down) {
                 SnapTap.LEFT_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.LEFT_STRAFE_LAST_PRESS_TIME = 0;
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_D) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_D) {
             //Right
-            if (pressed) {
+            if (down) {
                 SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.RIGHT_STRAFE_LAST_PRESS_TIME = 0;
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_W) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_W) {
             //Forward
-            if (pressed) {
+            if (down) {
                 SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.FORWARD_STRAFE_LAST_PRESS_TIME = 0;
             }
-        } else if (this.defaultKey.getCode() == InputUtil.GLFW_KEY_S) {
+        } else if (this.defaultKey.getValue() == InputConstants.KEY_S) {
             //Backward
-            if (pressed) {
+            if (down) {
                 SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME = System.currentTimeMillis();
             } else {
                 SnapTap.BACKWARD_STRAFE_LAST_PRESS_TIME = 0;
