@@ -20,11 +20,11 @@ public class MixinSnaptapToggleKey {
     public void setDown(boolean down, CallbackInfo ci) {
         if (down && ((Object) this) == SnapTap.TOGGLE_BIND) {
             SnapTap.TOGGLED = !SnapTap.TOGGLED;
-            Minecraft.getInstance().gui.getChat().addClientSystemMessage(
+            Minecraft.getInstance().gui.chatListener().handleSystemMessage(
                     Component.translatable("text.snaptap.toggled",
                             Component.translatable(SnapTap.TOGGLED ? "text.snaptap.enabled" : "options.ao.off")
                                     .setStyle(Style.EMPTY
-                                            .withColor(SnapTap.TOGGLED ? ChatFormatting.GREEN : ChatFormatting.RED))));
+                                            .withColor(SnapTap.TOGGLED ? ChatFormatting.GREEN : ChatFormatting.RED))), false);
         }
     }
 
